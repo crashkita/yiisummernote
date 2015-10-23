@@ -12,5 +12,6 @@ example of using
                     )
                 ));
 ```
-See [clientOptions](http://summernote.org/#/example)
+See [clientOptions](http://summernote.org/#/example) 
+
 See [Yii2 Summernote widget](https://github.com/zelenin/yii2-summernote-widget)
