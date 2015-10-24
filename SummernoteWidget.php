@@ -16,6 +16,18 @@ class SummernoteWidget extends CInputWidget
         'height' => 200,
         'codemirror' => array(
             'theme' => 'monokai'
+        ),
+        'toolbar' => array(
+            array('style', array('bold', 'italic', 'underline', 'clear')),
+            array('fontname', array('fontname')),
+            array('fontsize', array('fontsize')),
+            array('color', array('color')),
+            array('para', array('ul', 'ol', 'paragraph')),
+            array('height', array('height')),
+            array('table', array('table')),
+            array('insert', array('link', 'picture', 'hr')),
+            array('view', array('fullscreen', 'codeview')),
+            array('help', array('help'))
         )
     );
 
@@ -71,6 +83,7 @@ class SummernoteWidget extends CInputWidget
         $this->registerFontAwesome();
         $this->registerAssetsBase();
         $this->registerLang();
+        $this->registerPlugins();
     }
 
     /**
@@ -79,7 +92,6 @@ class SummernoteWidget extends CInputWidget
     private function registerAssetsBase()
     {
         $postfix = YII_DEBUG ? '' : '.min';
-        $postfix ='';
         $clientScript = Yii::app()->clientScript;
         $clientScript->registerPackage('bootstrap');
         $assetsDir = __DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
@@ -120,7 +132,7 @@ class SummernoteWidget extends CInputWidget
         $assetsDir = __DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR;
         $css = '/css/font-awesome' . $postfix . '.css';
         $url = Yii::app()->assetManager->publish($assetsDir
-                        . 'font-awesome');
+                . 'font-awesome');
         $clientScript->registerCssFile($url . $css);
     }
 
@@ -179,13 +191,11 @@ JS;
         }
         $clientOptions = empty($this->clientOptions) ? null : CJavaScript::encode($this->clientOptions);
         Yii::app()->clientScript->registerScript(
-                $id, 
-                'jQuery( "#' . $id . '" ).summernote(' . $clientOptions . ');', 
+                $id, 'jQuery( "#' . $id . '" ).summernote(' . $clientOptions . ');',
                 CClientScript::POS_LOAD
         );
     }
-    
-    
+
     public function getId($autoGenerate = true)
     {
         if (isset($this->options['id'])) {
@@ -193,7 +203,25 @@ JS;
         } else {
             return parent::getId($autoGenerate);
         }
-        
+    }
+
+    /**
+     * Registration plugins
+     */
+    public function registerPlugins()
+    {
+        $pluginsDir = __DIR__ . DIRECTORY_SEPARATOR . 'assets' . DIRECTORY_SEPARATOR . 'plugin' . DIRECTORY_SEPARATOR;
+        $clientScript = Yii::app()->clientScript;
+        if (!empty($this->plugins) && is_array($this->plugins)) {
+            foreach ($this->plugins as $plugin) {
+                $clientScript->registerScriptFile(
+                        Yii::app()->assetManager->publish($pluginsDir
+                                . 'summernote-ext-' . $plugin . '.js'));
+                if ($plugin == 'video') {
+                    $this->clientOptions['toolbar'][] = array('insert2', array('video'));
+                }
+            }
+        }
     }
 
 }

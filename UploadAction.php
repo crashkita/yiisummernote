@@ -22,10 +22,10 @@ class UploadAction extends CAction
         if (is_null($file)){
            
         } else {
-            $name = md5($file->getName()) . '.' . $file->getExtensionName();
-            $fullPath = Yii::getPathOfAlias($this->path) . $name; 
+            $fileName = md5($file->getName() . time()) . '.' . $file->getExtensionName();
+            $fullPath = Yii::getPathOfAlias($this->path) . DIRECTORY_SEPARATOR . $fileName; 
             $file->saveAs($fullPath);
-            $result['url'] = $this->url . $name;
+            $result['url'] = $this->url . $fileName;
         }
         echo CJSON::encode($result);
         Yii::app()->end();
